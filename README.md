@@ -3,3 +3,4 @@
 Name: Annu Thakur
 Enrollment Number: 2402309016
 Class/Section: BCA 5A
+Program Completed: 15/15
