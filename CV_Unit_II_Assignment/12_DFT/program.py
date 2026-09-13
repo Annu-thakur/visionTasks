@@ -1,30 +1,45 @@
 import cv2
 import numpy as np
 
-# Read the input image
-image = cv2.imread("input.jpg")
+# Read the image in grayscale
+image = cv2.imread("input.jpg", cv2.IMREAD_GRAYSCALE)
 
 # Check if image is loaded
 if image is None:
     print("Error: input.jpg not found")
     exit()
 
-# Apply smoothing using Gaussian Blur
-smooth = cv2.GaussianBlur(image, (5, 5), 0)
+# Convert image to float32 for DFT computation
+image_float = np.float32(image)
 
-# Create a sharpening kernel
-kernel = np.array([
-    [0, -1, 0],
-    [-1, 5, -1],
-    [0, -1, 0]
-])
+# Compute the 2D DFT using OpenCV
+dft = cv2.dft(image_float, flags=cv2.DFT_COMPLEX_OUTPUT)
 
-# Apply sharpening
-sharp = cv2.filter2D(image, -1, kernel)
+# Shift the frequency representation
+shifted_dft = np.fft.fftshift(dft)
 
-# Save both results
-cv2.imwrite("output_smooth.png", smooth)
-cv2.imwrite("output_sharp.png", sharp)
+# Print the required shapes
+print("Original Image Shape:", image.shape)
+print("DFT Result Shape:", dft.shape)
+print("Shifted DFT Shape:", shifted_dft.shape)
 
-print("Smoothed image saved as output_smooth.png")
-print("Sharpened image saved as output_sharp.png")
+# Create a magnitude image for saving the result
+magnitude = cv2.magnitude(
+    shifted_dft[:, :, 0],
+    shifted_dft[:, :, 1]
+)
+
+# Log scaling for visualization
+magnitude = np.log(magnitude + 1)
+
+# Normalize to 0-255
+magnitude = cv2.normalize(
+    magnitude, None, 0, 255, cv2.NORM_MINMAX
+)
+
+magnitude = np.uint8(magnitude)
+
+# Save the result
+cv2.imwrite("output.png", magnitude)
+
+print("DFT result saved as output.png")

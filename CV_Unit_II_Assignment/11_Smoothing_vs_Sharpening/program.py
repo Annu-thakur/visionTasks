@@ -1,25 +1,24 @@
 import cv2
 import numpy as np
 
-# Read the input image
 image = cv2.imread("input.jpg")
 
-# Check if image is loaded
 if image is None:
-    print("Error: input.jpg not found")
+    print("Error:input.jpg not found")
     exit()
 
-# Custom sharpening kernel
-kernel = np.array([
-    [0, -1, 0],
-    [-1, 5, -1],
-    [0, -1, 0]
+smooth = cv2.GaussianBlur(image,(5,5),0)
+
+kernel=np.array([
+    [0,-1,0],
+    [-1,5,-1],
+    [0,-1,0]
 ])
 
-# Apply the sharpening kernel
-sharpened = cv2.filter2D(image, -1, kernel)
+sharp = cv2.filter2D(image,-1,kernel)
 
-# Save the sharpened image
-cv2.imwrite("output.png", sharpened)
+cv2.imwrite("output_smooth.png",smooth)
+cv2.imwrite("output_sharp.png",sharp)
 
-print("Sharpened image saved as output.png")
+print("Smoothed image saved as output_smooth.png")
+print("sharpened image saved as output_sharp.png")
